@@ -5,5 +5,4 @@
 
 ## Completed By
 
-- Rikey Chen
 - Steven Inouye
