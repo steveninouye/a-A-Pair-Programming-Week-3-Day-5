@@ -1,10 +1,9 @@
 # App Academy Pair Programming-Week 3 Day 4
 
-- CSS Float Exercise
-- Movie Buff
-- Polls
+- CSS Flex Exercise
+- Build Your Own ActiveRecord
 
 ## Completed By
 
-- Student 1
-- Student 2
+- Rikey Chen
+- Steven Inouye
