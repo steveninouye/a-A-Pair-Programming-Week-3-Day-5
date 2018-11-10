@@ -4,6 +4,24 @@ require 'active_support/inflector'
 # of this project. It was only a warm up.
 
 class SQLObject
+
+  def self.hash_to_string(hash, join, remove_id = false)
+    keys = hash.keys
+    vals = hash.values
+    if remove_id
+      id_idx = keys.index(:id)
+      if id_idx
+        keys.delete_at(id_idx)
+        vals.delete_at(id_idx)
+      end
+    end
+    new_vals = keys.map.with_index do |e,i|
+      val = vals[i].is_a?(Fixnum) ? vals[i] : "\'#{vals[i]}\'"
+      "#{e} = #{val}"
+    end
+    new_vals.join(join)
+  end
+
   def self.columns
     @columns ||= DBConnection.execute2("SELECT * FROM #{table_name}")[0].map(&:to_sym)
   end
@@ -75,19 +93,12 @@ class SQLObject
   end
 
   def update
-    keys = @attributes.keys
-    vals = @attributes.values
-    id_idx = keys.index(:id)
-    if id_idx
-      keys.delete_at(id_idx)
-      vals.delete_at(id_idx)
-    end
-    new_vals = keys.map.with_index{|e,i| "#{e} = \'#{vals[i]}\'"}
+    set_str = self.class.hash_to_string(@attributes, ", ", true)
     DBConnection.execute(<<-SQL)
       UPDATE
         #{self.class.table_name}
       SET
-        #{new_vals.join(", ")}
+        #{set_str}
       WHERE
         id = #{attributes[:id]}
     SQL
